@@ -1,3 +1,5 @@
+if True: print("Igaz!")
+
 print("Név: {0},Kor: {1}".format("Béla",24))
 #helyörzők, helyettesítődnek a format fügvény paramétereivel.
 #változókkal is működik.
@@ -81,7 +83,7 @@ def globális_nullázó_függvény():
 globális_nullázó_függvény()
 print("Globális változó:", x)
 
-'''
+
 print("\n")
 
 
@@ -104,7 +106,7 @@ while futás == True:
 else:
     print("Vége a programnak")
 
-'''
+
 print("\n")
 
 #alapértelmezett paraméter
@@ -285,7 +287,6 @@ több_ország_halmaz.add("Kína")
 print("Részhalmaza?: ",több_ország_halmaz.issuperset(országok_halmaza)) # részhalmaza-e ?
 országok_halmaza.remove("UK")
 print(országok_halmaza & több_ország_halmaz) #metszet
-print(országok_halmaza.intersection(több_ország_halmaz)) #metszet
 
 print("\n")
 
@@ -333,3 +334,124 @@ print(csak_egy_szöveg[::-1]) #visszafelé
 #print(csak_egy_szöveg[honnantól:meddig:hányasával])
 
 print("\n")
+
+#osztályok és objektuom
+
+class Munkatárs:
+    '''Munkatársak regisztrálása'''
+
+    ennyi_munkatárs_lett_létrehozva = 0 #osztályváltozó, ebből csak egy van
+
+
+    def __init__(self, munkatárs_név): #konstruktor - létrehozott függvény - speciális tagfüggvény, mellyel
+        self.név = munkatárs_név       #létrehozhatjuk magát az osztály egy példányát.
+        Munkatárs.ennyi_munkatárs_lett_létrehozva += 1 #ha létrehozunk egyet
+
+    def köszönés(self):
+        print(f"Hello én {self.név} vagyok.")
+
+    def vége_a_műszaknak(self):
+        Munkatárs.ennyi_munkatárs_lett_létrehozva -= 1 #hazament a munkából
+
+    @classmethod
+    def hányan_dolgoznak_még(cls):
+        print(cls.ennyi_munkatárs_lett_létrehozva, " ember dolgozik még.") #cls magára a class-ra utal
+
+#class - sablonok
+#objektumok - példányok
+#az objektumoknak és a sablonnak is lehetnek tulajdonságai amiket változókban tárolunk (__init__)
+#és lehetnek képességei melyeket függvényben írunk le.
+#osztályváltozókat és osztályfüggvényeket tehát közvetlenül az osztály segítségével külön objektumpéldányok
+#létrehozások nélkül is használhatjuk.
+
+
+egy_munkatárs = Munkatárs("Viktor")
+egy_munkatárs.köszönés()
+másik_munkatárs = Munkatárs("Ádám")
+másik_munkatárs.köszönés()
+
+Munkatárs.hányan_dolgoznak_még()
+egy_munkatárs.vége_a_műszaknak()
+Munkatárs.hányan_dolgoznak_még()
+másik_munkatárs.vége_a_műszaknak()
+Munkatárs.hányan_dolgoznak_még()
+
+print("\n")
+
+#fájlok olvasása és írása
+
+valamilyen_többsoros_szöveg = '''\
+Imagination is more important
+than knowledge. Knowledge is limited.
+Imagination encircles the world.
+[Albert Einstein1]
+'''
+
+file = open("adatok.txt", "w") #"w" - write/írás , "r" - read/olvasás
+file.write(valamilyen_többsoros_szöveg)
+file.close()
+
+file = open("adatok.txt", "r")
+while True:
+    egy_sor = file.read()
+    if len(egy_sor) == 0:
+        break
+    print(egy_sor, end="")
+
+file.close()
+
+print("\n")
+
+# bármilyen objektum tárolása
+
+import pickle
+
+ez_egy_lista = ["búbosvöcsök",999,False]
+
+fájl = open("tároló.dat","wb") #eddig ugyanaz
+pickle.dump(ez_egy_lista,fájl) #elraktuk
+fájl.close()
+
+del ez_egy_lista #kitöröltük
+
+fájl = open("tároló.dat","rb")
+ez_egy_másik_lista = pickle.load(fájl)
+fájl.close()
+
+print(ez_egy_másik_lista)
+
+print("\n")
+
+#with
+
+with open("adatok.txt", "r") as fájl:
+    for sor in fájl:
+        print(sor, end="")
+# nem szükséges a fájl lezárása
+
+print("\n")
+
+#kivételkezelés
+
+class túl_kis_szám_kivétel(Exception):
+    '''Akkor szól, ha túl kicsi a bevitt szám.'''
+    def __init__(self, bevitt_szám, minimális_érték):
+        Exception.__init__(self)
+        self.bevitt_szám = bevitt_szám
+        self.minimális_érték = minimális_érték
+
+try:
+    num = int(input("Enter the number: ")) #beolvassuk és konvertáljuk egész típussá
+    if num < 100:
+        raise túl_kis_szám_kivétel(num,100) #egy kivétel keletkezik
+except túl_kis_szám_kivétel as TKSZK:
+    print(f"A beírt szám {TKSZK.bevitt_szám},"
+          f" A minimális érték: {TKSZK.minimális_érték}")
+except ValueError:
+    print("This is not a number!") #csak a ValueError hiba esetén
+except:
+    print("Something went wrong!") #bármilyen hiba esetén
+else:
+    print(f"So the number was: {num}") #ha nincs semmilyen hiba
+finally:
+    print("Good Bye!") #ezt mindenképpen lefogja futtatni
